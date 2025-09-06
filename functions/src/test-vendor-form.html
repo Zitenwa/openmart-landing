@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Vendor Form</title>
+</head>
+<body>
+  <h2>Vendor Form Test</h2>
+  <form id="vendorForm">
+    <label>Full Name: <input type="text" name="fullName" required></label><br>
+    <label>Business Name: <input type="text" name="businessName"></label><br>
+    <label>Email: <input type="email" name="email" required></label><br>
+    <label>Phone: <input type="text" name="phone" required></label><br>
+    <label>Social Links: <input type="text" name="socialLinks"></label><br>
+    <label>Categories: <input type="text" name="categories" required></label><br>
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('vendorForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = Object.fromEntries(new FormData(form));
+      formData.socialLinks = formData.socialLinks ? formData.socialLinks.split(',') : [];
+      const response = await fetch('http://localhost:5001/openmart-91cb0/us-central1/submitVendorForm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      const result = await response.json();
+      alert(JSON.stringify(result));
+    });
+  </script>
+</body>
+</html>
+

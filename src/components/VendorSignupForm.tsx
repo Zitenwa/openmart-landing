@@ -36,7 +36,7 @@ export default function VendorSignupForm() {
             categories: formData.getAll('categories'),
         };
 
-        if (!data.fullName || !data.email || !data.phone || data.categories.length === 0) {
+        if (!data.fullName || !data.businessName || !data.email || !data.phone || data.categories.length === 0) {
             setError("Please fill out all required fields.");
             setIsLoading(false);
             return;
@@ -108,7 +108,8 @@ export default function VendorSignupForm() {
                             id="businessName"
                             type="text"
                             name="businessName"
-                            placeholder="Business Name (Optional)"
+                            placeholder="Business Name"
+                            required
                             className="w-full border p-3 rounded-xl"
                         />
                     </div>

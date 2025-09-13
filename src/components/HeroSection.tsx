@@ -10,12 +10,22 @@ export default function HeroSection() {
           sales channel. Choose products you love, share them with your network, and earn extra income —
           no stock, no stress.
         </p>
-        <a
-          href="#signup"
-          className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-2xl shadow-lg transition-colors duration-300"
-        >
-          Become a Vendor
-        </a>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a
+              href="/become-vendor"
+              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-2xl shadow-lg transition-colors duration-300"
+            >
+              Become a Vendor
+            </a>
+            <a
+              href="https://mart.nexxintel.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-gray-800 hover:bg-gray-900 text-white font-semibold px-8 py-3 rounded-2xl shadow-lg transition-colors duration-300"
+            >
+              Visit Marketplace
+            </a>
+        </div>
       </header>
     )
 }

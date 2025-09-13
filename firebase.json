@@ -6,6 +6,13 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "redirects": [
+      {
+        "source": "/become-vendor",
+        "destination": "https://openmart-1.nocode.cs-cart.com/index.php?dispatch=companies.apply_for_vendor&invitation_key=761300f3aeb70d9f2c9d1b5969d3a7ba",
+        "type": 301
+      }
+    ],
     "rewrites": [
       {
         "source": "**",

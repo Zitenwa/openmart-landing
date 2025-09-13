@@ -1,40 +1,58 @@
-import * as functions from "firebase-functions";
+
+import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
+import axios from "axios";
+import { defineString } from "firebase-functions/params";
 
 admin.initializeApp();
+
 const db = admin.firestore();
+const cscartApiUrl = defineString("CSCART_API_URL");
+const cscartApiToken = defineString("CSCART_API_TOKEN");
 
-export const submitVendorForm = functions.https.onRequest(async (req, res) => {
-  if (req.method !== "POST") {
-    res.status(405).send("Method Not Allowed");
-    return;
-  }
 
-  try {
-    const { fullName, businessName, email, phone, socialLinks, categories } = req.body;
-
-    if (!fullName || !email || !phone || !categories) {
-      res.status(400).send("Missing required fields");
-      return;
+export const onVendorPendingCreate = onDocumentCreated("vendors_pending/{vendorId}", async (event) => {
+    const snap = event.data;
+    if (!snap) {
+        console.log("No data associated with the event");
+        return;
     }
+    const vendorData = snap.data();
+    const { businessName, email, phone, categories, socialHandles } = vendorData;
 
-    const newVendor = {
-      fullName,
-      businessName: businessName || "",
-      email,
-      phone,
-      socialLinks: socialLinks || [],
-      categories,
-      submittedAt: admin.firestore.FieldValue.serverTimestamp(),
-    };
+    const storeUrl = businessName.toLowerCase().replace(/\s+/g, "-");
 
-    const docRef = await db.collection("vendorForms").add(newVendor);
+    try {
+      const response = await axios.post(
+        cscartApiUrl.value(),
+        {
+          company: businessName,
+          email,
+          phone,
+          categories: categories,
+          social_handles: socialHandles,
+          status: "A",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${cscartApiToken.value()}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    res.status(200).json({ success: true, id: docRef.id });
-    return; // <-- exit the function
-  } catch (error) {
-    console.error("Error submitting vendor form:", error);
-    res.status(500).send("Internal Server Error");
-    return;
-  }
-});
+      const { vendor_id: csCartId } = response.data;
+
+      await db.collection("vendors_active").add({
+        ...vendorData,
+        csCartId,
+        storeUrl,
+      });
+
+      await snap.ref.delete();
+
+      console.log(`Vendor ${businessName} processed successfully.`);
+    } catch (error) {
+      console.error("Error processing vendor:", error);
+    }
+  });
